@@ -68,12 +68,50 @@ function Navbar() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <span className={`text-2xl font-light tracking-wider transition-colors duration-300 ${
-              scrolled ? 'text-neutral-900' : 'text-neutral-900'
-            }`}>
-              SOBTI ENTERPRISES
-            </span>
+          <Link to="/" className="flex items-center gap-3 group">
+            {/* Logo Icon - Hanging Light Bulbs */}
+            <svg
+              className={`w-10 h-12 transition-colors duration-300 ${
+                scrolled ? 'text-neutral-900' : 'text-white'
+              }`}
+              viewBox="0 0 40 48"
+              fill="none"
+              stroke="currentColor"
+            >
+              {/* Top Bar */}
+              <rect x="4" y="2" width="32" height="4" fill="currentColor" rx="1" />
+
+              {/* Left bulb - wavy wire */}
+              <path d="M10 6 Q8 12, 10 18 Q12 24, 10 30" strokeWidth="1.5" fill="none" />
+              <ellipse cx="10" cy="34" rx="4" ry="5" strokeWidth="1.5" fill="none" />
+              <line x1="8" y1="33" x2="12" y2="33" strokeWidth="1" />
+
+              {/* Middle bulb - wavy wire */}
+              <path d="M20 6 Q18 14, 20 22 Q22 30, 20 38" strokeWidth="1.5" fill="none" />
+              <ellipse cx="20" cy="42" rx="4" ry="5" strokeWidth="1.5" fill="none" />
+              <line x1="18" y1="41" x2="22" y2="41" strokeWidth="1" />
+              <line x1="18" y1="43" x2="22" y2="43" strokeWidth="1" />
+              <line x1="19" y1="44" x2="21" y2="46" strokeWidth="1" />
+
+              {/* Right bulb - wavy wire */}
+              <path d="M30 6 Q32 12, 30 18 Q28 24, 30 30" strokeWidth="1.5" fill="none" />
+              <ellipse cx="30" cy="34" rx="4" ry="5" strokeWidth="1.5" fill="none" />
+              <line x1="28" y1="33" x2="32" y2="33" strokeWidth="1" />
+            </svg>
+
+            {/* Logo Text */}
+            <div className="flex flex-col">
+              <span className={`text-lg font-medium tracking-wider transition-colors duration-300 ${
+                scrolled ? 'text-neutral-900' : 'text-white'
+              }`}>
+                SOBTI
+              </span>
+              <span className={`text-[10px] uppercase tracking-[0.25em] transition-colors duration-300 ${
+                scrolled ? 'text-neutral-500' : 'text-white/70'
+              }`}>
+                Enterprises
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation Links */}
@@ -82,13 +120,15 @@ function Navbar() {
             <Link
               to="/"
               className={`relative text-sm tracking-wider uppercase transition-colors duration-300 ${
-                scrolled ? 'text-neutral-600 hover:text-neutral-900' : 'text-neutral-700 hover:text-neutral-900'
-              } ${isActive('/') ? 'text-neutral-900' : ''}`}
+                scrolled
+                  ? 'text-neutral-600 hover:text-neutral-900'
+                  : 'text-white/80 hover:text-white'
+              } ${isActive('/') ? (scrolled ? 'text-neutral-900' : 'text-white') : ''}`}
             >
               Home
-              <span className={`absolute -bottom-1 left-0 h-px bg-neutral-900 transition-all duration-300 ${
-                isActive('/') ? 'w-full' : 'w-0'
-              }`} />
+              <span className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${
+                scrolled ? 'bg-neutral-900' : 'bg-white'
+              } ${isActive('/') ? 'w-full' : 'w-0'}`} />
             </Link>
 
             {/* Products with Dropdown */}
@@ -100,16 +140,18 @@ function Navbar() {
               <Link
                 to="/products"
                 className={`relative text-sm tracking-wider uppercase transition-colors duration-300 flex items-center gap-1 ${
-                  scrolled ? 'text-neutral-600 hover:text-neutral-900' : 'text-neutral-700 hover:text-neutral-900'
-                } ${isActive('/products') ? 'text-neutral-900' : ''}`}
+                  scrolled
+                    ? 'text-neutral-600 hover:text-neutral-900'
+                    : 'text-white/80 hover:text-white'
+                } ${isActive('/products') ? (scrolled ? 'text-neutral-900' : 'text-white') : ''}`}
               >
                 Products
                 <svg className={`w-3 h-3 transition-transform duration-300 ${productsDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
                 </svg>
-                <span className={`absolute -bottom-1 left-0 h-px bg-neutral-900 transition-all duration-300 ${
-                  isActive('/products') ? 'w-full' : 'w-0'
-                }`} />
+                <span className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${
+                  scrolled ? 'bg-neutral-900' : 'bg-white'
+                } ${isActive('/products') ? 'w-full' : 'w-0'}`} />
               </Link>
 
               {/* Dropdown Menu */}
@@ -134,13 +176,15 @@ function Navbar() {
             <Link
               to="/contact"
               className={`relative text-sm tracking-wider uppercase transition-colors duration-300 ${
-                scrolled ? 'text-neutral-600 hover:text-neutral-900' : 'text-neutral-700 hover:text-neutral-900'
-              } ${isActive('/contact') ? 'text-neutral-900' : ''}`}
+                scrolled
+                  ? 'text-neutral-600 hover:text-neutral-900'
+                  : 'text-white/80 hover:text-white'
+              } ${isActive('/contact') ? (scrolled ? 'text-neutral-900' : 'text-white') : ''}`}
             >
               Contact
-              <span className={`absolute -bottom-1 left-0 h-px bg-neutral-900 transition-all duration-300 ${
-                isActive('/contact') ? 'w-full' : 'w-0'
-              }`} />
+              <span className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${
+                scrolled ? 'bg-neutral-900' : 'bg-white'
+              } ${isActive('/contact') ? 'w-full' : 'w-0'}`} />
             </Link>
           </div>
 
@@ -150,15 +194,15 @@ function Navbar() {
             className="md:hidden p-2"
           >
             <div className="w-6 h-5 relative flex flex-col justify-between">
-              <span className={`w-full h-px bg-neutral-900 transition-all duration-300 ${
-                mobileMenuOpen ? 'rotate-45 translate-y-2' : ''
-              }`} />
-              <span className={`w-full h-px bg-neutral-900 transition-all duration-300 ${
-                mobileMenuOpen ? 'opacity-0' : ''
-              }`} />
-              <span className={`w-full h-px bg-neutral-900 transition-all duration-300 ${
-                mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''
-              }`} />
+              <span className={`w-full h-px transition-all duration-300 ${
+                scrolled ? 'bg-neutral-900' : 'bg-white'
+              } ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+              <span className={`w-full h-px transition-all duration-300 ${
+                scrolled ? 'bg-neutral-900' : 'bg-white'
+              } ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+              <span className={`w-full h-px transition-all duration-300 ${
+                scrolled ? 'bg-neutral-900' : 'bg-white'
+              } ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
             </div>
           </button>
         </div>

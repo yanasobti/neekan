@@ -1,4 +1,5 @@
 import CallToAction from '../components/CallToAction'
+import SupportChat from '../components/SupportChat'
 
 function ContactPage() {
   return (
@@ -23,8 +24,8 @@ function ContactPage() {
           </p>
         </div>
       </section>
-
       <CallToAction />
+      <SupportChat />
     </div>
   )
 }

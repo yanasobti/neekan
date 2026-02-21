@@ -19,11 +19,13 @@ public class ProductController {
         this.productService = productService;
     }
 
+    // GET ALL PRODUCTS
     @GetMapping
-    public List<Product> getProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<List<Product>> getProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
+    // GET PRODUCT BY ID
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable int id) {
         return productService.getProductById(id)
@@ -31,16 +33,32 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // ADD PRODUCT
     @PostMapping
-    public ResponseEntity<String> addProduct(@Valid @RequestBody Product product) {
-        productService.addProduct(product);
-        return ResponseEntity.ok("Product added successfully");
+    public ResponseEntity<Product> addProduct(@Valid @RequestBody Product product) {
+        Product savedProduct = productService.addProduct(product);
+        return ResponseEntity.ok(savedProduct);
     }
 
+    // UPDATE PRODUCT
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(
+            @PathVariable int id,
+            @Valid @RequestBody Product updatedProduct) {
+
+        return productService.updateProduct(id, updatedProduct)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // DELETE PRODUCT
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable int id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.ok("Product deleted successfully");
-    }
 
+        if (productService.deleteProduct(id)) {
+            return ResponseEntity.ok("Product deleted successfully");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

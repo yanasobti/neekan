@@ -7,3 +7,32 @@ export async function getProducts() {
   }
   return res.json();
 }
+
+export async function sendContactMessage({ name, email, phone, message, productIds }) {
+  const res = await fetch(`${BASE_URL}/contact`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name, email, phone, message, productIds }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to send message. Please try again.');
+  }
+
+  return res.json();
+}
+
+export async function trackInquiry(referenceCode) {
+  const res = await fetch(`${BASE_URL}/contact/track/${referenceCode}`);
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Inquiry not found');
+  }
+
+  return res.json();
+}
+

@@ -1,9 +1,9 @@
-import Products from '../components/Products'
+import ProductsShowcase from '../components/ProductsShowcase'
 
 function ProductsPage() {
   return (
     <div className="min-h-screen bg-neutral-50">
-      <Products />
+      <ProductsShowcase />
     </div>
   )
 }

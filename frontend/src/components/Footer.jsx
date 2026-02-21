@@ -65,11 +65,11 @@ function Footer() {
               Contact
             </h4>
             <ul className="space-y-4 text-neutral-300 font-light">
-              <li>+91 98765 43210</li>
-              <li>info@sobtienterprises.com</li>
+              <li>+91 98120 52133</li>
+              <li>sobtienterprises@gmail.com</li>
               <li className="leading-relaxed">
-                Industrial Area, Phase II<br />
-                New Delhi, India
+                1944, Dholkot Area<br />
+                Ambala Cantt, Haryana 134007
               </li>
             </ul>
           </div>
