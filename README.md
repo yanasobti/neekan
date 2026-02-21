@@ -1,4 +1,4 @@
-# 🏢 Sobti Enterprises - Premium Electrical Solutions Platform
+# Sobti Enterprises - Premium Electrical Solutions Platform
 
 > **A modern, professional e-commerce platform for premium electrical products** — serving homeowners, builders, contractors, and businesses with high-quality lighting, fans, cables, switches, and electrical accessories.
 
@@ -20,41 +20,41 @@
 
 Sobti Enterprises is a **full-stack e-commerce platform** designed exclusively for electrical businesses. It provides a seamless, modern shopping experience for customers to browse, compare, and request quotes for:
 
-- ⚡ **Lighting Solutions** - LED bulbs, ceiling lights, wall lights, decorative fixtures
-- 🌬️ **Premium Fans** - Ceiling fans, exhaust fans, table fans, industrial ventilation
-- 🔌 **Switches & Sockets** - Modular switches, smart controls, power outlets
-- 🔗 **Cables & Wiring** - Copper cables, electrical wiring, conduits, flexible cables
-- 🛠️ **Electrical Accessories** - MCB panels, distribution boxes, capacitors, relays, fuses
+- **Lighting Solutions** - LED bulbs, ceiling lights, wall lights, decorative fixtures
+- **Premium Fans** - Ceiling fans, exhaust fans, table fans, industrial ventilation
+- **Switches & Sockets** - Modular switches, smart controls, power outlets
+- **Cables & Wiring** - Copper cables, electrical wiring, conduits, flexible cables
+- **Electrical Accessories** - MCB panels, distribution boxes, capacitors, relays, fuses
 
 ### 🎯 Target Audience
-- 🏠 **Homeowners** - DIY home improvements and renovations
-- 👷 **Builders** - Bulk purchasing for construction projects
-- 🏗️ **Contractors** - Professional electrical installations
-- 🏭 **Businesses** - Industrial electrical solutions
+- **Homeowners** - DIY home improvements and renovations
+- **Builders** - Bulk purchasing for construction projects
+- **Contractors** - Professional electrical installations
+- **Businesses** - Industrial electrical solutions
 
 ---
 
 ## ✨ Key Features
 
 ### 💻 Frontend Experience
-- ✅ **Responsive Design** - Mobile-first approach with Tailwind CSS
-- ✅ **Product Showcase** - Asymmetric grid layouts with hover effects
-- ✅ **Image/Video Support** - Display product images and demo videos
-- ✅ **Search & Filter** - Browse products by category (Lighting, Fans, Switches, etc.)
-- ✅ **Contact Integration** - Request quotes directly for products
-- ✅ **Professional UI** - Clean, modern, light-mode design optimized for B2B customers
-- ✅ **Modal Details** - View detailed product information in smooth modals
-- ✅ **Category Navigation** - Sticky navigation for quick section jumping
+- **Responsive Design** - Mobile-first approach with Tailwind CSS
+- **Product Showcase** - Asymmetric grid layouts with hover effects
+- **Image/Video Support** - Display product images and demo videos
+- **Search & Filter** - Browse products by category (Lighting, Fans, Switches, etc.)
+- **Contact Integration** - Request quotes directly for products
+- **Professional UI** - Clean, modern, light-mode design optimized for B2B customers
+- **Modal Details** - View detailed product information in smooth modals
+- **Category Navigation** - Sticky navigation for quick section jumping
 
 ### 🔧 Backend Capabilities
-- ✅ **RESTful API** - Complete CRUD operations for products
-- ✅ **Quote System** - Customers can request quotes for products
-- ✅ **Contact Management** - Track inquiries with unique reference codes
-- ✅ **Email Integration** - Automatic email notifications on quote requests
-- ✅ **Admin Dashboard Ready** - Track and manage customer inquiries
-- ✅ **Data Validation** - Strong validation with clear error messages
-- ✅ **Database Persistence** - PostgreSQL with automatic migrations
-- ✅ **CORS Support** - Secure cross-origin requests
+- **RESTful API** - Complete CRUD operations for products
+- **Quote System** - Customers can request quotes for products
+- **Contact Management** - Track inquiries with unique reference codes
+- **Email Integration** - Automatic email notifications on quote requests
+- **Admin Dashboard Ready** - Track and manage customer inquiries
+- **Data Validation** - Strong validation with clear error messages
+- **Database Persistence** - PostgreSQL with automatic migrations
+- **CORS Support** - Secure cross-origin requests
 
 ---
 
@@ -1187,8 +1187,6 @@ Built with modern technologies:
 **⭐ If you found this helpful, please star the repository!**
 
 Made with ❤️ for Sobti Enterprises
-
-![Banner](https://via.placeholder.com/1200x100?text=Sobti+Enterprises)
 
 </div>
 
