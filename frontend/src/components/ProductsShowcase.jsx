@@ -415,6 +415,18 @@ export default function ProductsShowcase() {
     return acc;
   }, {});
 
+  // Sort fans: Kuhl first, Indo last
+  if (categorizedProducts.fans) {
+    const brandOrder = ['kuhl', 'orient', 'ecolink', 'indo'];
+    categorizedProducts.fans.sort((a, b) => {
+      const textA = `${a.name} ${a.description || ''}`.toLowerCase();
+      const textB = `${b.name} ${b.description || ''}`.toLowerCase();
+      const rankA = brandOrder.findIndex(brand => textA.includes(brand));
+      const rankB = brandOrder.findIndex(brand => textB.includes(brand));
+      return (rankA === -1 ? 999 : rankA) - (rankB === -1 ? 999 : rankB);
+    });
+  }
+
   if (loading) {
     return (
       <section className="min-h-screen flex items-center justify-center bg-neutral-50 pt-20">
