@@ -2,63 +2,59 @@ package com.ecomm.ecom.controller;
 
 import com.ecomm.ecom.model.Product;
 import com.ecomm.ecom.service.ProductService;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
+@CrossOrigin
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductService service;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
+    public ProductController(ProductService service) {
+        this.service = service;
     }
 
-    // GET ALL PRODUCTS
-    @GetMapping
-    public ResponseEntity<List<Product>> getProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
-    }
-
-    // GET PRODUCT BY ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable int id) {
-        return productService.getProductById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // ADD PRODUCT
     @PostMapping
-    public ResponseEntity<Product> addProduct(@Valid @RequestBody Product product) {
-        Product savedProduct = productService.addProduct(product);
-        return ResponseEntity.ok(savedProduct);
+    public Product create(@Valid @RequestBody Product product) {
+        return service.create(product);
     }
 
-    // UPDATE PRODUCT
+    @GetMapping
+    public List<Product> getAll() {
+        return service.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public Product getById(@PathVariable int id) {
+        return service.getById(id);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(
-            @PathVariable int id,
-            @Valid @RequestBody Product updatedProduct) {
-
-        return productService.updateProduct(id, updatedProduct)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public Product update(@PathVariable int id,
+                          @Valid @RequestBody Product product) {
+        return service.update(id, product);
     }
 
-    // DELETE PRODUCT
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable int id) {
+    public void delete(@PathVariable int id) {
+        service.delete(id);
+    }
 
-        if (productService.deleteProduct(id)) {
-            return ResponseEntity.ok("Product deleted successfully");
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    // ===============================
+    // CSV UPLOAD ENDPOINT
+    // ===============================
+
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadCsv(@RequestParam("file") MultipartFile file) {
+
+        service.uploadProductsFromCsv(file);
+
+        return ResponseEntity.ok("CSV uploaded successfully!");
     }
 }

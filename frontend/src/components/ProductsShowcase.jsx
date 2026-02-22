@@ -1,224 +1,263 @@
 import { useEffect, useState, useRef } from "react";
 import { getProducts } from "../services/api";
 
-// Asymmetric Product Card - Can be small, medium, large, or featured
-function ProductCard({ product, size = 'medium', onView }) {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const videoRef = useRef(null);
+const GIF_URL = "https://belezzaworld.com/img/main/realmetal_new2.gif";
 
-  const isVideo = product.imageUrl?.match(/\.(mp4|webm|ogg)$/i);
-
-  // Size classes for asymmetric layout
-  const sizeClasses = {
-    small: 'col-span-1 row-span-1',
-    medium: 'col-span-1 row-span-1',
-    large: 'col-span-2 row-span-1',
-    tall: 'col-span-1 row-span-2',
-    featured: 'col-span-2 row-span-2',
-    full: 'col-span-1 aspect-[16/9] md:aspect-[21/9]',
-    half: 'col-span-1 aspect-[4/3]'
-  };
-
-  useEffect(() => {
-    if (videoRef.current && isVideo) {
-      if (isHovered) {
-        videoRef.current.play();
-      } else {
-        videoRef.current.pause();
-        videoRef.current.currentTime = 0;
-      }
-    }
-  }, [isHovered, isVideo]);
-
-  return (
-    <div
-      className={`group cursor-pointer ${sizeClasses[size]} relative overflow-hidden bg-white transition-all duration-500 hover:z-10`}
-      onClick={() => onView(product)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Media Container */}
-      <div className="absolute inset-0">
-        {/* Placeholder */}
-        <div className={`absolute inset-0 bg-neutral-100 flex items-center justify-center transition-opacity duration-500 ${imageLoaded && !imageError ? 'opacity-0' : 'opacity-100'}`}>
-          <svg className="w-12 h-12 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-          </svg>
-        </div>
-
-        {/* Video */}
-        {isVideo ? (
-          <video
-            ref={videoRef}
-            src={product.imageUrl}
-            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
-            loop
-            muted
-            playsInline
-            onLoadedData={() => setImageLoaded(true)}
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          /* Image */
-          product.imageUrl && !imageError && (
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="w-full h-full object-contain transition-all duration-700 group-hover:scale-105"
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageError(true)}
-            />
-          )
-        )}
-      </div>
-
-      {/* Hover Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/90 via-neutral-900/20 to-transparent opacity-60 group-hover:opacity-100 transition-all duration-500" />
-
-      {/* Content */}
-      <div className="absolute inset-0 flex flex-col justify-end p-6">
-        <div className="transform transition-all duration-500 group-hover:translate-y-0 translate-y-2">
-          {product.category && (
-            <span className="inline-block text-xs uppercase tracking-widest text-white/70 mb-2">
-              {product.category}
-            </span>
-          )}
-          <h3 className={`text-white font-light tracking-wide ${size === 'featured' || size === 'large' ? 'text-2xl md:text-3xl' : 'text-lg'}`}>
-            {product.name}
-          </h3>
-          {(size === 'featured' || size === 'large') && product.description && (
-            <p className="text-white/70 text-sm mt-2 line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              {product.description}
-            </p>
-          )}
-        </div>
-
-        {/* View Button */}
-        <div className="mt-4 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-          <span className="inline-flex items-center gap-2 text-white text-xs uppercase tracking-widest">
-            <span>View Details</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </span>
-        </div>
-      </div>
-
-      {/* Video Indicator */}
-      {isVideo && (
-        <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full p-2">
-          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Modern Split Section - alternating text and image layout
-function SplitSection({ id, title, subtitle, products, onViewProduct, reverse = false }) {
-  const sectionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+// Restarts the GIF every time the section scrolls into view
+function SwitchesShowcase() {
+  const ref = useRef(null);
+  const [gifSrc, setGifSrc] = useState(GIF_URL + '?t=' + Date.now());
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true);
+          // Bust the cache so the browser re-fetches & replays from frame 1
+          setGifSrc(GIF_URL + '?t=' + Date.now());
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.15 }
     );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
+    if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
 
+  return (
+    <div ref={ref} className="relative w-full h-[85vh] overflow-hidden bg-neutral-950">
+      {/* GIF Background — re-triggered on scroll */}
+      <img
+        src={gifSrc}
+        alt="Premium Switches"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+
+      {/* Gradient Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/70 via-black/30 to-neutral-50"></div>
+
+      {/* Content */}
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
+        <p className="text-white/50 text-[10px] sm:text-xs uppercase tracking-[0.6em] mb-5 font-light">
+          Schneider · Norisys · Vihan · GreatWhite · GM · Legrand
+        </p>
+        <h3 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight tracking-tight leading-tight mb-6">
+          A New Era of
+          <br />
+          <span className="font-light">Switching</span>
+        </h3>
+        <div className="w-16 h-px bg-white/20 mb-6"></div>
+        <p className="text-white/60 text-base sm:text-lg font-light max-w-xl">
+          Exquisite range of premium switches designed to elevate every space.
+        </p>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+        <div className="w-6 h-10 border border-white/20 rounded-full flex items-start justify-center p-1.5">
+          <div className="w-1 h-2.5 bg-white/40 rounded-full animate-bounce"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Sleek section divider between categories
+function SectionDivider() {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.5 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className="relative py-12 overflow-hidden">
+      <div className={`flex items-center justify-center gap-4 transition-all duration-1000 ${visible ? 'opacity-100' : 'opacity-0'}`}>
+        {/* Left line */}
+        <div className={`h-px bg-gradient-to-r from-transparent to-neutral-300 transition-all duration-1000 ease-out ${visible ? 'w-24 sm:w-40 md:w-56' : 'w-0'}`}></div>
+        {/* Center diamond */}
+        <div className={`w-2 h-2 rotate-45 border border-neutral-300 transition-all duration-700 delay-300 ${visible ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}></div>
+        {/* Right line */}
+        <div className={`h-px bg-gradient-to-l from-transparent to-neutral-300 transition-all duration-1000 ease-out ${visible ? 'w-24 sm:w-40 md:w-56' : 'w-0'}`}></div>
+      </div>
+    </div>
+  );
+}
+
+// Category section — featured product + horizontal scroll row
+function CategorySection({ id, title, subtitle, products, onViewProduct }) {
+  const sectionRef = useRef(null);
+  const scrollRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
+      { threshold: 0.05 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const checkScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setCanScrollLeft(scrollLeft > 5);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+  };
+
+  useEffect(() => {
+    checkScroll();
+    const el = scrollRef.current;
+    if (el) el.addEventListener('scroll', checkScroll, { passive: true });
+    return () => el?.removeEventListener('scroll', checkScroll);
+  }, [products]);
+
+  const scroll = (dir) => {
+    if (!scrollRef.current) return;
+    const amount = scrollRef.current.clientWidth * 0.7;
+    scrollRef.current.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
+  };
+
   if (products.length === 0) return null;
 
-  const featuredProduct = products[0];
-  const otherProducts = products.slice(1);
+  const featured = products[0];
+  const rest = products.slice(1);
 
   return (
     <section
       id={id}
       ref={sectionRef}
-      className="scroll-mt-20 border-b border-neutral-200"
+      className="scroll-mt-20 py-16"
     >
-      {/* Featured Product - Split Layout */}
-      <div className={`grid grid-cols-1 lg:grid-cols-2 min-h-[50vh] max-w-7xl mx-auto`}>
-        {/* Text Side */}
-        <div className={`flex flex-col justify-center p-8 md:p-12 ${reverse ? 'lg:order-2' : 'lg:order-1'} ${isVisible ? 'animate-fadeInUp' : 'opacity-0'}`}>
-          <p className="text-neutral-400 text-xs uppercase tracking-[0.3em] mb-3">{subtitle}</p>
-          <h2 className="text-3xl md:text-4xl font-extralight text-neutral-900 tracking-tight mb-4">
-            {title}
-          </h2>
-          <div className="w-12 h-px bg-neutral-300 mb-6"></div>
-
-          <h3 className="text-xl font-light text-neutral-800 mb-3">
-            {featuredProduct.name}
-          </h3>
-          <p className="text-neutral-500 text-sm font-light leading-relaxed mb-6 max-w-sm">
-            {featuredProduct.description || 'Premium quality electrical product designed for modern living spaces.'}
+      <div className={`max-w-7xl mx-auto px-6 lg:px-8 ${isVisible ? 'animate-fadeInUp' : 'opacity-0'}`}>
+        {/* Header row */}
+        <div className="flex items-end justify-between mb-10">
+          <div>
+            <p className="text-neutral-400 text-xs uppercase tracking-[0.3em] mb-2">{subtitle}</p>
+            <h2 className="text-3xl md:text-4xl font-extralight text-neutral-900 tracking-tight">{title}</h2>
+          </div>
+          <p className="text-neutral-400 text-sm font-light hidden sm:block">
+            {products.length} {products.length === 1 ? 'product' : 'products'}
           </p>
-
-          <button
-            onClick={() => onViewProduct(featuredProduct)}
-            className="inline-flex items-center gap-2 text-neutral-900 text-xs uppercase tracking-widest group w-fit"
-          >
-            <span>View Details</span>
-            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </button>
         </div>
 
-        {/* Image Side */}
-        <div
-          className={`relative overflow-hidden bg-neutral-50 min-h-[300px] cursor-pointer group ${reverse ? 'lg:order-1' : 'lg:order-2'} ${isVisible ? 'animate-fadeIn' : 'opacity-0'}`}
-          onClick={() => onViewProduct(featuredProduct)}
-        >
-          {featuredProduct.imageUrl ? (
-            <img
-              src={featuredProduct.imageUrl}
-              alt={featuredProduct.name}
-              className="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <svg className="w-16 h-16 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
+        {/* Featured + Grid layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
+          {/* Featured product — large card */}
+          <div
+            className="lg:col-span-2 group relative cursor-pointer overflow-hidden bg-neutral-100 aspect-[4/5] lg:aspect-auto"
+            onClick={() => onViewProduct(featured)}
+          >
+            {featured.imageUrl ? (
+              <img
+                src={featured.imageUrl}
+                alt={featured.name}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-neutral-100">
+                <svg className="w-16 h-16 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 via-transparent to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-6">
+              <p className="text-white/60 text-xs uppercase tracking-widest mb-2">{featured.category || 'Featured'}</p>
+              <h3 className="text-white text-xl md:text-2xl font-light mb-1">{featured.name}</h3>
+              {featured.description && (
+                <p className="text-white/50 text-sm font-light line-clamp-2 max-w-sm">{featured.description}</p>
+              )}
+              <span className="inline-flex items-center gap-1.5 text-white/70 text-xs uppercase tracking-widest mt-4 group-hover:text-white transition-colors">
+                View Details
+                <svg className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </span>
             </div>
-          )}
+          </div>
 
-          {/* Hover Overlay */}
-          <div className="absolute inset-0 bg-neutral-900/0 group-hover:bg-neutral-900/5 transition-colors duration-300 flex items-center justify-center">
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-neutral-800 text-xs uppercase tracking-widest bg-white/90 px-4 py-2 rounded">
-              View
-            </span>
+          {/* Right side — small grid of next 6 products */}
+          <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {products.slice(1, 7).map((product) => (
+              <div
+                key={product.id}
+                className="group relative cursor-pointer overflow-hidden bg-neutral-50 aspect-square"
+                onClick={() => onViewProduct(product)}
+              >
+                {product.imageUrl ? (
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <svg className="w-8 h-8 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                  </div>
+                )}
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-neutral-900/0 group-hover:bg-neutral-900/60 transition-all duration-300 flex items-center justify-center">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs uppercase tracking-widest">View</span>
+                </div>
+                {/* Name */}
+                <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-white/90 backdrop-blur-sm">
+                  <p className="text-neutral-800 text-xs font-light truncate">{product.name}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
 
-      {/* Other Products Grid - Compact */}
-      {otherProducts.length > 0 && (
-        <div className="bg-white py-8 px-6 border-t border-neutral-100">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {otherProducts.map((product) => (
+        {/* Scrollable row for remaining products (7+) */}
+        {products.length > 7 && (
+          <div className="relative">
+            {/* Scroll arrows */}
+            {canScrollLeft && (
+              <button
+                onClick={() => scroll('left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-neutral-200 shadow-lg flex items-center justify-center hover:bg-neutral-50 transition-colors -ml-2"
+              >
+                <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
+            {canScrollRight && (
+              <button
+                onClick={() => scroll('right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-neutral-200 shadow-lg flex items-center justify-center hover:bg-neutral-50 transition-colors -mr-2"
+              >
+                <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
+
+            {/* Fade edges */}
+            {canScrollLeft && <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-neutral-50 to-transparent z-[5] pointer-events-none"></div>}
+            {canScrollRight && <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-neutral-50 to-transparent z-[5] pointer-events-none"></div>}
+
+            <div
+              ref={scrollRef}
+              className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+            >
+              {products.slice(7).map((product) => (
                 <div
                   key={product.id}
-                  className="group cursor-pointer"
+                  className="group flex-shrink-0 w-40 sm:w-48 cursor-pointer"
                   onClick={() => onViewProduct(product)}
                 >
-                  <div className="relative aspect-square bg-neutral-50 overflow-hidden rounded">
+                  <div className="relative aspect-square bg-neutral-50 overflow-hidden mb-2">
                     {product.imageUrl ? (
                       <img
                         src={product.imageUrl}
@@ -232,16 +271,17 @@ function SplitSection({ id, title, subtitle, products, onViewProduct, reverse = 
                         </svg>
                       </div>
                     )}
+                    <div className="absolute inset-0 bg-neutral-900/0 group-hover:bg-neutral-900/50 transition-all duration-300 flex items-center justify-center">
+                      <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs uppercase tracking-widest">View</span>
+                    </div>
                   </div>
-                  <p className="mt-2 text-sm text-neutral-700 group-hover:text-neutral-900 transition-colors truncate">
-                    {product.name}
-                  </p>
+                  <p className="text-neutral-700 text-xs font-light truncate group-hover:text-neutral-900 transition-colors">{product.name}</p>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </section>
   );
 }
@@ -489,17 +529,117 @@ export default function ProductsShowcase() {
           </div>
         </div>
 
-        {Object.entries(CATEGORIES).map(([key, category], index) => (
-          <SplitSection
-            key={key}
-            id={key}
-            title={category.title}
-            subtitle={category.subtitle}
-            products={categorizedProducts[key] || []}
-            onViewProduct={openModal}
-            reverse={index % 2 === 1}
-          />
-        ))}
+        {Object.entries(CATEGORIES).map(([key, category], index) => {
+          const hasProducts = categorizedProducts[key]?.length > 0;
+          if (!hasProducts) return null;
+
+          // Find if there's a previous visible category for the divider
+          const previousKeys = Object.keys(CATEGORIES).slice(0, index);
+          const hasPreviousSection = previousKeys.some(k => categorizedProducts[k]?.length > 0);
+
+          return (
+          <div key={key}>
+            {/* Divider between sections (skip for sections with cinematic intros) */}
+            {hasPreviousSection && key !== 'lighting' && key !== 'switches' && key !== 'fans' && <SectionDivider />}
+
+            {/* Lighting Video Showcase — cinematic intro */}
+            {key === 'lighting' && categorizedProducts[key]?.length > 0 && (
+              <div className="relative w-full h-[85vh] overflow-hidden">
+                {/* Video Background */}
+                <video
+                  className="absolute inset-0 w-full h-full object-cover"
+                  src="/videos/lighting-showcase.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+
+                {/* Gradient Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/70 via-black/30 to-neutral-50"></div>
+
+                {/* Content */}
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
+                  <p className="text-white/50 text-[10px] sm:text-xs uppercase tracking-[0.6em] mb-5 font-light">
+                    Neekan Lites · Ledlum · Philips · OSRAM
+                  </p>
+                  <h3 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight tracking-tight leading-tight mb-6">
+                    A New Era of
+                    <br />
+                    <span className="font-light">Lighting</span>
+                  </h3>
+                  <div className="w-16 h-px bg-white/20 mb-6"></div>
+                  <p className="text-white/60 text-base sm:text-lg font-light max-w-xl">
+                    Premium lighting solutions that redefine ambiance, efficiency, and modern design.
+                  </p>
+                </div>
+
+                {/* Scroll indicator */}
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+                  <div className="w-6 h-10 border border-white/20 rounded-full flex items-start justify-center p-1.5">
+                    <div className="w-1 h-2.5 bg-white/40 rounded-full animate-bounce"></div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Switches GIF Showcase — cinematic intro */}
+            {key === 'switches' && categorizedProducts[key]?.length > 0 && (
+              <SwitchesShowcase />
+            )}
+
+            {/* Fans Video Showcase — cinematic intro */}
+            {key === 'fans' && categorizedProducts[key]?.length > 0 && (
+              <div className="relative w-full h-[85vh] overflow-hidden bg-neutral-950">
+                {/* Video Background */}
+                <video
+                  className="absolute inset-0 w-full h-full object-cover"
+                  src="/videos/fans-showcase.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+
+                {/* Gradient Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/70 via-black/30 to-neutral-50"></div>
+
+                {/* Content */}
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
+                  <p className="text-white/50 text-[10px] sm:text-xs uppercase tracking-[0.6em] mb-5 font-light">
+                    Orient · Indo · Ecolink · Kuhl Fans
+                  </p>
+                  <h3 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight tracking-tight leading-tight mb-6">
+                    A New Era of
+                    <br />
+                    <span className="font-light">Fans</span>
+                  </h3>
+                  <div className="w-16 h-px bg-white/20 mb-6"></div>
+                  <p className="text-white/60 text-base sm:text-lg font-light max-w-xl">
+                    Premium ceiling fans that blend comfort, style, and energy efficiency.
+                  </p>
+                </div>
+
+                {/* Scroll indicator */}
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+                  <div className="w-6 h-10 border border-white/20 rounded-full flex items-start justify-center p-1.5">
+                    <div className="w-1 h-2.5 bg-white/40 rounded-full animate-bounce"></div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <CategorySection
+              id={key}
+              title={category.title}
+              subtitle={category.subtitle}
+              products={categorizedProducts[key] || []}
+              onViewProduct={openModal}
+              reverse={index % 2 === 1}
+            />
+          </div>
+          );
+        })}
       </div>
 
       {/* Product Modal */}

@@ -38,11 +38,11 @@ public class ContactMessage {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "is_read")
+    @Column(name = "is_read", nullable = false)
     private Boolean isRead = false;
 
-    @Column(name = "status")
-    private String status = "PENDING"; // PENDING, IN_PROGRESS, QUOTED, COMPLETED
+    @Column(name = "status", nullable = false)
+    private String status = "PENDING";
 
     public ContactMessage() {}
 
