@@ -13,7 +13,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/contact")
-@CrossOrigin(origins = "http://localhost:5173")
 public class ContactController {
 
     private final EmailService emailService;
