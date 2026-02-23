@@ -44,6 +44,7 @@ public class ProductService {
         existing.setDescription(updatedProduct.getDescription());
         existing.setImageUrl(updatedProduct.getImageUrl());
         existing.setCategory(updatedProduct.getCategory());
+        existing.setBrand(updatedProduct.getBrand());
 
         return repo.save(existing);
     }
@@ -75,6 +76,9 @@ public class ProductService {
                 product.setDescription(record.get("description"));
                 product.setImageUrl(record.get("imageUrl"));
                 product.setCategory(record.get("category"));
+                try {
+                    product.setBrand(record.get("brand"));
+                } catch (Exception ignored) {}
 
                 products.add(product);
             }

@@ -87,7 +87,7 @@ function CallToAction({ preSelectedProducts = [] }) {
     if (type === 'error') {
       setTimeout(() => {
         setToast({ show: false, type: '', message: '', referenceCode: '' });
-      }, 5000);
+      }, 10000);
     }
   };
 
