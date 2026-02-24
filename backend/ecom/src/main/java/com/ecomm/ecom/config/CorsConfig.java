@@ -15,8 +15,13 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/**")
-                        .allowedOriginPatterns("https://*.vercel.app")
-                        .allowedMethods("*")
+                        .allowedOriginPatterns(
+                                "https://*.netlify.app",
+                                "https://*.vercel.app",
+                                "http://localhost:5173",
+                                "http://localhost:3000"
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }

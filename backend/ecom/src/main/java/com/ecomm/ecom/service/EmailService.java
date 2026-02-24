@@ -4,6 +4,8 @@ import com.ecomm.ecom.model.ContactMessage;
 import com.ecomm.ecom.model.Product;
 import com.ecomm.ecom.repo.ContactMessageRepository;
 import com.ecomm.ecom.repo.ProductRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmailService {
+
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
     private final JavaMailSender mailSender;
     private final ContactMessageRepository contactMessageRepository;
@@ -62,9 +66,17 @@ public class EmailService {
         ContactMessage savedMessage =
                 contactMessageRepository.save(contactMessage);
 
-        // 🔹 Send emails
-        sendAdminNotification(savedMessage);
-        sendAutoReply(savedMessage);
+        // 🔹 Send emails (non-blocking — mail failure won't crash the request)
+        try {
+            sendAdminNotification(savedMessage);
+        } catch (Exception e) {
+            log.error("Failed to send admin notification email: {}", e.getMessage());
+        }
+        try {
+            sendAutoReply(savedMessage);
+        } catch (Exception e) {
+            log.error("Failed to send auto-reply email to {}: {}", savedMessage.getEmail(), e.getMessage());
+        }
 
         return savedMessage;
     }
