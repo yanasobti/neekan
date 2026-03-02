@@ -28,6 +28,8 @@ public class SecurityConfig {
                 var config = new org.springframework.web.cors.CorsConfiguration();
                 config.addAllowedOriginPattern("https://*.netlify.app");
                 config.addAllowedOriginPattern("https://*.vercel.app");
+                config.addAllowedOriginPattern("https://neekan-frontend.vercel.app");
+                config.addAllowedOriginPattern("https://sobtienterprises.vercel.app");
                 config.addAllowedOriginPattern("http://localhost:5173");
                 config.addAllowedOriginPattern("http://localhost:3000");
                 config.addAllowedMethod("*");
@@ -41,6 +43,7 @@ public class SecurityConfig {
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // ── Public endpoints ──────────────────────────────────────
+                .requestMatchers(HttpMethod.GET,  "/health").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/products").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/products/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST, "/contact").permitAll()
