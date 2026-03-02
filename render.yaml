@@ -15,8 +15,13 @@ services:
         sync: false
       - key: SPRING_DATASOURCE_PASSWORD
         sync: false
-      - key: RESEND_API_KEY
+      - key: BREVO_SMTP_LOGIN
+        sync: false
+      - key: BREVO_SMTP_KEY
+        sync: false
+      - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_API_KEY
         sync: false
+
 
