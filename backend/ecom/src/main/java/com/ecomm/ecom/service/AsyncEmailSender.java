@@ -20,8 +20,8 @@ public class AsyncEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(AsyncEmailSender.class);
 
-    private static final String COMPANY_EMAIL = "sobtienterprises02@gmail.com";
     private static final String COMPANY_NAME  = "Sobti Enterprises";
+    private static final String COMPANY_EMAIL = "yanasobti@gmail.com";  // must match Resend account email until domain verified
     private static final String FROM_ADDRESS  = "Sobti Enterprises <onboarding@resend.dev>";
 
     private final Resend resend;
@@ -99,3 +99,4 @@ public class AsyncEmailSender {
         return sb.toString();
     }
 }
+
