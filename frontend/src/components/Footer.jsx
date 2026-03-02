@@ -66,7 +66,7 @@ function Footer() {
             </h4>
             <ul className="space-y-4 text-neutral-300 font-light">
               <li>+91 98120 52133</li>
-              <li>sobtienterprises@gmail.com</li>
+              <li>sobtienterprises02@gmail.com</li>
               <li className="leading-relaxed">
                 1944, Dholkot Area<br />
                 Ambala Cantt, Haryana 134007

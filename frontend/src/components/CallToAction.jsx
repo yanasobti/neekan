@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import emailjs from '@emailjs/browser';
 import { sendContactMessage, getProducts } from '../services/api';
 
 function CallToAction({ preSelectedProducts = [] }) {
@@ -109,7 +110,39 @@ function CallToAction({ preSelectedProducts = [] }) {
         productIds: selectedProducts.length > 0 ? selectedProducts : null
       });
 
-      showToastMessage('success', 'Quote request submitted successfully!', response.referenceCode);
+      const refCode = response.referenceCode;
+      const productNames = getSelectedProductNames().join(', ') || 'None';
+
+      // Send emails via EmailJS (bypasses Render SMTP blocking)
+      const emailParams = {
+        customer_name: formData.name,
+        customer_email: formData.email,
+        customer_phone: formData.phone || 'Not provided',
+        customer_message: formData.message,
+        product_names: productNames,
+        reference_code: refCode,
+      };
+
+      try {
+        // Admin notification
+        await emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_ADMIN_TEMPLATE_ID,
+          emailParams,
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        );
+        // Customer auto-reply
+        await emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_CUSTOMER_TEMPLATE_ID,
+          emailParams,
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        );
+      } catch (emailErr) {
+        console.error('EmailJS error (non-fatal):', emailErr);
+      }
+
+      showToastMessage('success', 'Quote request submitted successfully!', refCode);
       setFormData({ name: '', email: '', phone: '', message: '' });
       setSelectedProducts([]);
     } catch (error) {
