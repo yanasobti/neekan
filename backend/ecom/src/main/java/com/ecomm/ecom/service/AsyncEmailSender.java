@@ -29,29 +29,33 @@ public class AsyncEmailSender {
     @Async
     public void sendAdminNotification(ContactMessage msg) {
         try {
+            log.info("Attempting to send admin notification for ref {}", msg.getReferenceCode());
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(COMPANY_EMAIL);
             mail.setSubject("New Quote Request [" + msg.getReferenceCode() + "] from " + msg.getName());
             mail.setText(buildAdminBody(msg));
             mailSender.send(mail);
-            log.info("Admin notification sent for ref {}", msg.getReferenceCode());
+            log.info("✅ Admin notification sent for ref {}", msg.getReferenceCode());
         } catch (Exception e) {
-            log.error("Failed to send admin notification: {}", e.getMessage());
+            log.error("❌ Failed to send admin notification for ref {}: {} - Cause: {}",
+                    msg.getReferenceCode(), e.getMessage(), e.getCause() != null ? e.getCause().getMessage() : "none", e);
         }
     }
 
     @Async
     public void sendAutoReply(ContactMessage msg) {
         try {
+            log.info("Attempting to send auto-reply to {}", msg.getEmail());
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(msg.getEmail());
             mail.setFrom(COMPANY_EMAIL);
             mail.setSubject("Quote Request Received [" + msg.getReferenceCode() + "] - " + COMPANY_NAME);
             mail.setText(buildUserBody(msg));
             mailSender.send(mail);
-            log.info("Auto-reply sent to {}", msg.getEmail());
+            log.info("✅ Auto-reply sent to {}", msg.getEmail());
         } catch (Exception e) {
-            log.error("Failed to send auto-reply to {}: {}", msg.getEmail(), e.getMessage());
+            log.error("❌ Failed to send auto-reply to {}: {} - Cause: {}",
+                    msg.getEmail(), e.getMessage(), e.getCause() != null ? e.getCause().getMessage() : "none", e);
         }
     }
 
