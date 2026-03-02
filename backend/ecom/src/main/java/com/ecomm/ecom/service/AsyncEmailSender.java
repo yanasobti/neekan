@@ -1,10 +1,13 @@
 package com.ecomm.ecom.service;
 
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
 import com.ecomm.ecom.model.ContactMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -19,26 +22,28 @@ public class AsyncEmailSender {
 
     private static final String COMPANY_EMAIL = "sobtienterprises02@gmail.com";
     private static final String COMPANY_NAME  = "Sobti Enterprises";
+    private static final String FROM_ADDRESS  = "Sobti Enterprises <onboarding@resend.dev>";
 
-    private final JavaMailSender mailSender;
+    private final Resend resend;
 
-    public AsyncEmailSender(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+    public AsyncEmailSender(@Value("${resend.api.key}") String apiKey) {
+        this.resend = new Resend(apiKey);
     }
 
     @Async
     public void sendAdminNotification(ContactMessage msg) {
         try {
             log.info("Attempting to send admin notification for ref {}", msg.getReferenceCode());
-            SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setTo(COMPANY_EMAIL);
-            mail.setSubject("New Quote Request [" + msg.getReferenceCode() + "] from " + msg.getName());
-            mail.setText(buildAdminBody(msg));
-            mailSender.send(mail);
-            log.info("✅ Admin notification sent for ref {}", msg.getReferenceCode());
-        } catch (Exception e) {
-            log.error("❌ Failed to send admin notification for ref {}: {} - Cause: {}",
-                    msg.getReferenceCode(), e.getMessage(), e.getCause() != null ? e.getCause().getMessage() : "none", e);
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from(FROM_ADDRESS)
+                    .to(COMPANY_EMAIL)
+                    .subject("New Quote Request [" + msg.getReferenceCode() + "] from " + msg.getName())
+                    .text(buildAdminBody(msg))
+                    .build();
+            CreateEmailResponse response = resend.emails().send(params);
+            log.info("✅ Admin notification sent for ref {}, id={}", msg.getReferenceCode(), response.getId());
+        } catch (ResendException e) {
+            log.error("❌ Failed to send admin notification for ref {}: {}", msg.getReferenceCode(), e.getMessage(), e);
         }
     }
 
@@ -46,16 +51,16 @@ public class AsyncEmailSender {
     public void sendAutoReply(ContactMessage msg) {
         try {
             log.info("Attempting to send auto-reply to {}", msg.getEmail());
-            SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setTo(msg.getEmail());
-            mail.setFrom(COMPANY_EMAIL);
-            mail.setSubject("Quote Request Received [" + msg.getReferenceCode() + "] - " + COMPANY_NAME);
-            mail.setText(buildUserBody(msg));
-            mailSender.send(mail);
-            log.info("✅ Auto-reply sent to {}", msg.getEmail());
-        } catch (Exception e) {
-            log.error("❌ Failed to send auto-reply to {}: {} - Cause: {}",
-                    msg.getEmail(), e.getMessage(), e.getCause() != null ? e.getCause().getMessage() : "none", e);
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from(FROM_ADDRESS)
+                    .to(msg.getEmail())
+                    .subject("Quote Request Received [" + msg.getReferenceCode() + "] - " + COMPANY_NAME)
+                    .text(buildUserBody(msg))
+                    .build();
+            CreateEmailResponse response = resend.emails().send(params);
+            log.info("✅ Auto-reply sent to {}, id={}", msg.getEmail(), response.getId());
+        } catch (ResendException e) {
+            log.error("❌ Failed to send auto-reply to {}: {}", msg.getEmail(), e.getMessage(), e);
         }
     }
 
@@ -94,4 +99,3 @@ public class AsyncEmailSender {
         return sb.toString();
     }
 }
-
