@@ -84,12 +84,6 @@
             <version>10.10.0</version>
         </dependency>
 
-        <!-- Resend HTTP API - works on Render free tier, no SMTP ports needed -->
-        <dependency>
-            <groupId>com.resend</groupId>
-            <artifactId>resend-java</artifactId>
-            <version>3.1.0</version>
-        </dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>

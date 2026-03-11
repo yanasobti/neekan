@@ -13,14 +13,11 @@ import java.util.stream.Collectors;
 @Service
 public class EmailService {
 
-    private final AsyncEmailSender asyncEmailSender;
     private final ContactMessageRepository contactMessageRepository;
     private final ProductRepository productRepository;
 
-    public EmailService(AsyncEmailSender asyncEmailSender,
-                        ContactMessageRepository contactMessageRepository,
+    public EmailService(ContactMessageRepository contactMessageRepository,
                         ProductRepository productRepository) {
-        this.asyncEmailSender = asyncEmailSender;
         this.contactMessageRepository = contactMessageRepository;
         this.productRepository = productRepository;
     }
@@ -48,11 +45,7 @@ public class EmailService {
         ContactMessage savedMessage = contactMessageRepository.save(
                 new ContactMessage(name, email, phone, message, productIdsStr, productNamesStr));
 
-        // Delegated to a SEPARATE bean so @Async proxy is actually triggered
-        asyncEmailSender.sendAdminNotification(savedMessage);
-        asyncEmailSender.sendAutoReply(savedMessage);
-
+        // Emails are sent via EmailJS from frontend - backend only saves the contact message
         return savedMessage;
     }
 }
-
