@@ -19,6 +19,7 @@ function ProductCard({ product, onView }) {
             <img
               src={product.imageUrl}
               alt={product.name}
+              referrerPolicy="no-referrer"
               className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageError(true)}
@@ -383,6 +384,7 @@ export default function Products() {
                     <img
                       src={selectedProduct.imageUrl}
                       alt={selectedProduct.name}
+                      referrerPolicy="no-referrer"
                       className="w-full h-full object-cover"
                       onError={(e) => { e.target.style.display = 'none'; }}
                     />

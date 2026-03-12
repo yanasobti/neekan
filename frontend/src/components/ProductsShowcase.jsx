@@ -16,6 +16,7 @@ function ProductMiniCard({ product, onViewProduct }) {
           <img
             src={product.imageUrl}
             alt=""
+            referrerPolicy="no-referrer"
             className={`absolute inset-0 w-full h-full object-contain p-4 transition-all duration-500 group-hover:scale-105 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setImgLoaded(true)}
             onError={() => setImgError(true)}
