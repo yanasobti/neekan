@@ -14,23 +14,23 @@ function ProductCard({ product, onView }) {
       <div className="relative overflow-hidden bg-white aspect-[4/5]">
         {/* Image Container */}
         <div className="absolute inset-0">
-          {/* Placeholder */}
-          <div className={`absolute inset-0 bg-neutral-100 flex items-center justify-center transition-opacity duration-500 ${imageLoaded && !imageError ? 'opacity-0' : 'opacity-100'}`}>
-            <svg className="w-12 h-12 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
-
-          {/* Actual Image */}
+          {/* Actual Image — renders behind, fades in once loaded */}
           {product.imageUrl && !imageError && (
             <img
               src={product.imageUrl}
               alt={product.name}
-              className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+              className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageError(true)}
             />
           )}
+
+          {/* Placeholder — fades out once image loads, pointer-events-none so it never blocks image */}
+          <div className={`absolute inset-0 bg-neutral-100 flex items-center justify-center transition-opacity duration-500 pointer-events-none ${imageLoaded && !imageError ? 'opacity-0' : 'opacity-100'}`}>
+            <svg className="w-12 h-12 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
         </div>
 
         {/* Hover Overlay */}

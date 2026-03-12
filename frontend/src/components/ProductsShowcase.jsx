@@ -3,6 +3,42 @@ import { getProducts } from "../services/api";
 
 const GIF_URL = "https://belezzaworld.com/img/main/realmetal_new2.gif";
 
+// Mini product card with proper image load/error state
+function ProductMiniCard({ product, onViewProduct }) {
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <div className="group flex-shrink-0 w-44 sm:w-52 cursor-pointer" onClick={() => onViewProduct(product)}>
+      <div className="relative aspect-square bg-neutral-50 overflow-hidden mb-2">
+        {/* Image */}
+        {product.imageUrl && !imgError && (
+          <img
+            src={product.imageUrl}
+            alt=""
+            className={`absolute inset-0 w-full h-full object-contain p-4 transition-all duration-500 group-hover:scale-105 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={() => setImgLoaded(true)}
+            onError={() => setImgError(true)}
+          />
+        )}
+        {/* Placeholder — shown until loaded */}
+        <div className={`absolute inset-0 flex items-center justify-center bg-neutral-50 pointer-events-none transition-opacity duration-500 ${imgLoaded && !imgError ? 'opacity-0' : 'opacity-100'}`}>
+          <svg className="w-8 h-8 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+        </div>
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-neutral-900/0 group-hover:bg-neutral-900/50 transition-all duration-300 flex items-center justify-center">
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs uppercase tracking-widest">View</span>
+        </div>
+      </div>
+      <p className="text-neutral-700 text-xs font-light truncate group-hover:text-neutral-900 transition-colors">{product.name}</p>
+    </div>
+  );
+}
+
+// Horizontal scroll row for a brand
+
 // Restarts the GIF every time the section scrolls into view
 function SwitchesShowcase() {
   const ref = useRef(null);
@@ -122,21 +158,7 @@ function BrandScrollRow({ brand, products, onViewProduct }) {
 
         <div ref={scrollRef} className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth pb-1">
           {products.map((product) => (
-            <div key={product.id} className="group flex-shrink-0 w-44 sm:w-52 cursor-pointer" onClick={() => onViewProduct(product)}>
-              <div className="relative aspect-square bg-neutral-50 overflow-hidden mb-2">
-                {product.imageUrl ? (
-                  <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-neutral-900/0 group-hover:bg-neutral-900/50 transition-all duration-300 flex items-center justify-center">
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs uppercase tracking-widest">View</span>
-                </div>
-              </div>
-              <p className="text-neutral-700 text-xs font-light truncate group-hover:text-neutral-900 transition-colors">{product.name}</p>
-            </div>
+            <ProductMiniCard key={product.id} product={product} onViewProduct={onViewProduct} />
           ))}
         </div>
       </div>
